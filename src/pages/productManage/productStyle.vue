@@ -931,6 +931,21 @@
                 <q-input v-model="productCode.costPrice" class="no-margin" float-label="成本价"/>
               </q-field>
             </div>
+            <div  class="col-xs-12 col-sm-6 col-md-3">
+              <q-field :error="$v.productCode.costPrice2.$error" error-label="请填写有效值">
+                <q-input v-model="productCode.costPrice2" class="no-margin" float-label="成本价2"/>
+              </q-field>
+            </div>
+            <div  class="col-xs-12 col-sm-6 col-md-3">
+              <q-field :error="$v.productCode.costPrice3.$error" error-label="请填写有效值">
+                <q-input v-model="productCode.costPrice3" class="no-margin" float-label="成本价3"/>
+              </q-field>
+            </div>
+            <div  class="col-xs-12 col-sm-6 col-md-3">
+              <q-field :error="$v.productCode.costPrice4.$error" error-label="请填写有效值">
+                <q-input v-model="productCode.costPrice4" class="no-margin" float-label="成本价4"/>
+              </q-field>
+            </div>
             <div class="col-xs-12 col-sm-6 col-md-3">
               <q-select
                 v-model="productCode.prodColor"
@@ -1233,6 +1248,9 @@ export default {
         retailPrice: '',
         supplyPrice: '',
         costPrice: '',
+        costPrice2: '',
+        costPrice3: '',
+        costPrice4: '',
         prodColor: '',
         numModel: '',
         netWeight: '',
@@ -1294,6 +1312,21 @@ export default {
       },
       costPrice: {
         required,
+        decimal,
+        minValue: minValue(0),
+        maxValue: maxValue(999999)
+      },
+      costPrice2: {
+        decimal,
+        minValue: minValue(0),
+        maxValue: maxValue(999999)
+      },
+      costPrice3: {
+        decimal,
+        minValue: minValue(0),
+        maxValue: maxValue(999999)
+      },
+      costPrice4: {
         decimal,
         minValue: minValue(0),
         maxValue: maxValue(999999)
