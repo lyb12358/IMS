@@ -351,12 +351,12 @@
             :props="props"
             style="text-align:center"
           >{{ props.row.unitName }}</q-td>
-          <!-- <q-td
+          <q-td
             v-if="checkCode('prodMat')"
             key="prodMat"
             :props="props"
             style="text-align:center"
-          >{{ props.row.prodMat }}</q-td>-->
+          >{{ props.row.prodMat }}</q-td>
           <q-td
             v-if="checkCode('levelName')"
             key="levelName"
