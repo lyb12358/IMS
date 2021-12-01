@@ -1009,6 +1009,10 @@
               <q-toggle v-model="productCode.isRemind" label="是否库存提醒"/>
               <q-toggle v-model="productCode.isSecurity" label="是否有防伪码"/>
               <q-toggle v-model="productCode.isRate" label="是否计算周转率"/>
+              <q-toggle
+                v-model="productCode.isQxmini"
+                label="是否七星小程序展示"
+              />
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12">
               <q-input
@@ -1045,55 +1049,59 @@
     </q-dialog>
     <!-- 20211201 -->
     <!-- detail image -->
-    <q-modal v-model="detailImageModalOpened" no-backdrop-dismiss
+    <q-modal
+      v-model="detailImageModalOpened"
+      no-backdrop-dismiss
       no-esc-dismiss
-      no-refocus :content-css="{ minHeight: '100vh'}">
+      no-refocus
+      :content-css="{ minHeight: '100vh'}"
+    >
       <q-modal-layout footer-class="no-shadow">
         <q-toolbar slot="header" :color="brandColor">
           <q-btn flat round dense v-close-overlay icon="mdi-arrow-left"/>
         </q-toolbar>
         <q-toolbar slot="footer" inverted>
           <div class="col-12 row justify-center">
-            <q-btn flat label="关闭" color="primary" v-close-overlay/>
-          <q-btn flat label="上传图片" color="primary" @click="detailImageUploadDialogOpened=true"/>
-          <q-btn flat label="确认" color="primary" @click="confirmDrag()"/>
+            <q-btn label="关闭" color="primary" v-close-overlay/>
+            <q-btn label="上传图片" color="primary" @click="detailImageUploadDialogOpened=true"/>
+            <q-btn label="确认" color="primary" @click="confirmDrag()"/>
           </div>
         </q-toolbar>
-      <q-card style="width: 800px" flat>
-        <q-card-main>
-          <div class="text-h6">拖动右侧小图可以改变顺序(如果空白请先上传图片)</div>
-        </q-card-main>
-        <q-card-main class="row scroll">
-          <div style="max-height: 80vh" class="scroll col-9">
-            <div class="row">
-              <div v-for="item in detailImageList" :key="item.index">
-                <img :src="api + item" style="width: 600px">
+        <q-card style="width: 800px" flat>
+          <q-card-main>
+            <div class="text-h6">拖动右侧小图可以改变顺序(如果空白请先上传图片)</div>
+          </q-card-main>
+          <q-card-main class="row scroll">
+            <div style="max-height: 80vh" class="scroll col-9">
+              <div class="row">
+                <div v-for="item in detailImageList" :key="item.index">
+                  <img :src="api + item" style="width: 600px">
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col-3" style="max-height: 80vh">
-            <draggable v-model="detailImageList" group="people">
-              <div class="q-pa-xs" v-for="item in detailImageList" :key="item.index">
-                <!-- <q-img
+            <div class="col-3" style="max-height: 80vh">
+              <draggable v-model="detailImageList" group="people">
+                <div class="q-pa-xs" v-for="item in detailImageList" :key="item.index">
+                  <!-- <q-img
                     :src="api + item"
                     style="width: 80px; height: 80px"
                     class="rounded-borders"
                     ><q-badge floating @click="removeAt(index)">
                       <q-icon name="close" color="white" /> </q-badge
-                ></q-img>-->
-                <q-jumbotron dark :img-src="api + item">
-                  <q-btn round color="primary" icon="close" @click="removeAt(item.index)"/>
-                </q-jumbotron>
-              </div>
-            </draggable>
-          </div>
-        </q-card-main>
-        <!-- <q-card-actions align="end">
+                  ></q-img>-->
+                  <q-jumbotron dark :img-src="api + item">
+                    <q-btn round color="primary" icon="close" @click="removeAt(item.index)"/>
+                  </q-jumbotron>
+                </div>
+              </draggable>
+            </div>
+          </q-card-main>
+          <!-- <q-card-actions align="end">
           <q-btn flat label="关闭" color="primary" v-close-overlay/>
           <q-btn flat label="上传图片" color="primary" @click="detailImageUploadDialogOpened=true"/>
           <q-btn flat label="确认" color="primary" @click="confirmDrag()"/>
-        </q-card-actions> -->
-      </q-card>
+          </q-card-actions>-->
+        </q-card>
       </q-modal-layout>
     </q-modal>
     <!-- upload detail image -->
@@ -1101,20 +1109,20 @@
       <span slot="title">上传图片</span>
       <div slot="body">
         <q-uploader
-            ref="detailImageUpload"
-            :url="api+'/imageUpload/detailImage'"
-            accept=".jpg, .jpeg, .png"
-            :additionalFields="[
+          ref="detailImageUpload"
+          :url="api+'/imageUpload/detailImage'"
+          accept=".jpg, .jpeg, .png"
+          :additionalFields="[
                       {'name':'id','value':this.uploadId},
                       {'name':'type','value':this.uploadType}]"
-            clearable
-            auto-expand
-            hide-upload-button
-            @uploaded="detailImageUploaded"
-            @failed="imageUploadedFail"
-            @added="addDetailImageFile"
-            float-label="上传图片"
-          />
+          clearable
+          auto-expand
+          hide-upload-button
+          @uploaded="detailImageUploaded"
+          @failed="imageUploadedFail"
+          @added="addDetailImageFile"
+          float-label="上传图片"
+        />
       </div>
       <template slot="buttons" slot-scope="props">
         <q-btn color="primary" label="上传" @click="detailImageUpload"/>
@@ -1365,6 +1373,7 @@ export default {
         // tRetailPrice: '',
         // tSupplyPrice: '',
         // tCostPrice: '',
+        isQxmini: false,
         isDel: false,
         isSync: false,
         comId: null,

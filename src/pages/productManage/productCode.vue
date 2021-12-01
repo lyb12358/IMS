@@ -969,6 +969,11 @@
                 v-model="productCode.isRate"
                 label="是否计算周转率"
               />
+              <q-toggle
+                v-show="checkCodeModified(192)"
+                v-model="productCode.isQxmini"
+                label="是否七星小程序展示"
+              />
             </div>
             <!-- 20190705 -->
             <div v-show="checkCodeModified(174)" class="col-xs-12 col-sm-6 col-md-3">
@@ -1315,6 +1320,7 @@ export default {
         // tRetailPrice: '',
         // tSupplyPrice: '',
         // tCostPrice: '',
+        isQxmini: false,
         isDel: false,
         isSync: false,
         code69: '',
@@ -1754,6 +1760,7 @@ export default {
           this.$nextTick(() => {
             this.productStyle.thumbnail = this.productStyle.styleThumbnail
             this.productStyle.id = this.productStyle.styleId
+            this.productCode.isQxmini = this.productCode.codeIsQxmini
             this.mainCodeModalOpened = true
           })
           let bigType = this.productStyle.bigType

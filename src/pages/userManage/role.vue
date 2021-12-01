@@ -381,35 +381,41 @@
                       color="tertiary"
                       :val="90"
                     />
-                    <br>
+
                     <q-checkbox v-model="rolePermission" label="查看69码" color="tertiary" :val="179"/>
-                    <br>
+
                     <q-checkbox
                       v-model="rolePermission"
                       label="查看单品毛重"
                       color="tertiary"
                       :val="180"
                     />
-                    <br>
+
                     <q-checkbox
                       v-model="rolePermission"
                       label="查看单品净重"
                       color="tertiary"
                       :val="181"
                     />
-                    <br>
+
                     <q-checkbox
                       v-model="rolePermission"
                       label="查看包装材质"
                       color="tertiary"
                       :val="182"
                     />
-                    <br>
+
                     <q-checkbox
                       v-model="rolePermission"
                       label="查看单品包装尺寸"
                       color="tertiary"
                       :val="183"
+                    />
+                    <q-checkbox
+                      v-model="rolePermission"
+                      label="查看是否七星小程序展示"
+                      color="tertiary"
+                      :val="193"
                     />
                     <br>
                     <q-checkbox v-model="rolePermission" label="修改商品编号" color="orange" :val="94"/>
@@ -465,6 +471,12 @@
                       label="修改单品包装尺寸"
                       color="orange"
                       :val="178"
+                    />
+                    <q-checkbox
+                      v-model="rolePermission"
+                      label="修改是否七星小程序展示"
+                      color="orange"
+                      :val="192"
                     />
                   </div>
                 </q-collapsible>
@@ -721,7 +733,7 @@
                     <q-checkbox v-model="rolePermission" label="维护生活物料" color="warning" :val="190"/>
                     <q-checkbox v-model="rolePermission" label="维护717" color="warning" :val="188"/>
                     <q-checkbox v-model="rolePermission" label="维护七星定制" color="warning" :val="189"/>
-                    <q-checkbox v-model="rolePermission" label="维护线上" color="warning" :val="191"/>                      
+                    <q-checkbox v-model="rolePermission" label="维护线上" color="warning" :val="191"/>
                   </div>
                 </q-collapsible>
                 <q-collapsible label="批量操作(点击展开)">
@@ -750,7 +762,7 @@ import {
   updateRole,
   getRolePermission,
   updateRolePermission,
-  getStaticPermissionList
+  getStaticPermissionList,
 } from 'src/api/userManage'
 import { maxLength, required } from 'vuelidate/lib/validators'
 export default {
@@ -760,7 +772,7 @@ export default {
       searchForm: {
         page: 0,
         row: 0,
-        name: ''
+        name: '',
       },
       loading: false,
       newRoleLoading: false,
@@ -771,7 +783,7 @@ export default {
       serverPagination: {
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 10
+        rowsNumber: 10,
       },
       serverData: [],
       columns: [
@@ -780,16 +792,16 @@ export default {
         {
           name: 'status',
           label: '状态',
-          field: 'status'
+          field: 'status',
         },
-        { name: 'operation', label: '操作', field: 'operation' }
+        { name: 'operation', label: '操作', field: 'operation' },
       ],
       //role dialog
       roleDialogOpened: false,
       roleDialogAction: '',
       role: {
         name: '',
-        remark: ''
+        remark: '',
       },
       //permission manage
       mainRoleModalOpened: false,
@@ -798,24 +810,24 @@ export default {
       staticCheckCodePermission: [],
       staticCheckStylePermission: [],
       staticModifyCodePermission: [],
-      staticModifyStylePermission: []
+      staticModifyStylePermission: [],
     }
   },
   validations: {
     role: {
-      name: { required, maxLength: maxLength(15) }
-    }
+      name: { required, maxLength: maxLength(15) },
+    },
   },
   computed: {
     brandColor() {
       return this.$store.getters['user/brandColor']
-    }
+    },
   },
   methods: {
     notify(type, message) {
       this.$q.notify({
         message: message,
-        type: type
+        type: type,
       })
     },
     deleteRole(id) {
@@ -826,14 +838,14 @@ export default {
       this.$nextTick(() => {
         this.serverPagination.page = 1
         this.request({
-          pagination: this.serverPagination
+          pagination: this.serverPagination,
         })
       })
     },
     search() {
       this.serverPagination.page = 1
       this.request({
-        pagination: this.serverPagination
+        pagination: this.serverPagination,
       })
     },
     //dataTable request
@@ -842,14 +854,14 @@ export default {
       this.searchForm.page = pagination.page
       this.searchForm.row = pagination.rowsPerPage
       getRoleList(this.searchForm)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.serverPagination = pagination
           this.serverPagination.rowsNumber = data.total
           this.serverData = data.rows
           this.loading = false
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
         })
     },
@@ -880,17 +892,17 @@ export default {
       //fix
       this.role.status = 1
       addRole(this.role)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.roleDialogOpened = false
           this.newRoleLoading = false
           Object.assign(this.role, this.$options.data.call(this).role)
           this.notify('positive', data.msg)
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.newRoleLoading = false
         })
     },
@@ -902,17 +914,17 @@ export default {
       this.$v.role.$reset()
       this.modifyRoleLoading = true
       updateRole(this.role)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.roleDialogOpened = false
           this.modifyRoleLoading = false
           Object.assign(this.role, this.$options.data.call(this).role)
           this.notify('positive', data.msg)
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.modifyRoleLoading = false
         })
     },
@@ -924,18 +936,18 @@ export default {
       }
       this.rolePermission = []
       getRolePermission(id)
-        .then(response => {
+        .then((response) => {
           this.roleId = id
           let data = response.data.data
           this.rolePermission = data
           this.mainRoleModalOpened = true
         })
-        .catch(error => {})
+        .catch((error) => {})
     },
     modifyPermission() {
       this.modifyPermissionLoading = true
       updateRolePermission(this.roleId, this.rolePermission)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.notify('positive', data.msg)
           this.roleId = ''
@@ -943,47 +955,49 @@ export default {
           this.mainRoleModalOpened = false
           this.modifyPermissionLoading = false
         })
-        .catch(error => {
+        .catch((error) => {
           this.modifyPermissionLoading = false
         })
     },
     uncheckAllPermission(list) {
-      this.rolePermission = this.rolePermission.filter(x => list.indexOf(x) < 0)
+      this.rolePermission = this.rolePermission.filter(
+        (x) => list.indexOf(x) < 0
+      )
     },
     checkAllPermission(list) {
       this.uncheckAllPermission(list)
       this.rolePermission = this.rolePermission.concat(list)
-    }
+    },
   },
   mounted() {
     this.request({
-      pagination: this.serverPagination
+      pagination: this.serverPagination,
     })
     getStaticPermissionList(11)
-      .then(response => {
+      .then((response) => {
         let data = response.data.data
         this.staticCheckCodePermission = data
       })
-      .catch(error => {})
+      .catch((error) => {})
     getStaticPermissionList(13)
-      .then(response => {
+      .then((response) => {
         let data = response.data.data
         this.staticModifyCodePermission = data
       })
-      .catch(error => {})
+      .catch((error) => {})
     getStaticPermissionList(19)
-      .then(response => {
+      .then((response) => {
         let data = response.data.data
         this.staticCheckStylePermission = data
       })
-      .catch(error => {})
+      .catch((error) => {})
     getStaticPermissionList(21)
-      .then(response => {
+      .then((response) => {
         let data = response.data.data
         this.staticModifyStylePermission = data
       })
-      .catch(error => {})
-  }
+      .catch((error) => {})
+  },
 }
 </script>
 
