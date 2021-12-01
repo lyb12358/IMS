@@ -24,6 +24,14 @@ export function importModelDownload(name) {
     })
 }
 
+export function recordDetailImage(id,type,location) {
+    return service({
+        url: '/product/detailImage',
+        method: 'post',
+        params: {id,type,location}
+    })
+}
+
 
 
 

@@ -8,7 +8,8 @@ module.exports = function (ctx) {
       'vue-echarts',
       'vue-simply-markdown',
       'vuelidate',
-      'route-permission'
+      'route-permission',
+      'draggable'
     ],
     css: [
       'app.styl'
@@ -118,7 +119,8 @@ module.exports = function (ctx) {
         'QPopupEdit',
         'QDatetime',
         'QTimeline',
-        'QTimelineEntry'
+        'QTimelineEntry',
+        'QJumbotron'
       ],
       directives: [
         'Ripple',

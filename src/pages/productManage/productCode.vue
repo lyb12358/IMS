@@ -1111,7 +1111,7 @@ import {
   numeric,
   integer,
   decimal,
-  required
+  required,
 } from 'vuelidate/lib/validators'
 import { getOrgList } from 'src/api/organization'
 import {
@@ -1121,18 +1121,22 @@ import {
   updateProdCode,
   switchBind,
   getProdStyleOptions,
-  getProdStyleById
+  getProdStyleById,
 } from 'src/api/product'
 import {
   getProdClassOptions,
   getProdClassOptionsByParent,
   getProdParamOptions,
   getProdCatOptions,
-  getProdSpeOptionsByParent
+  getProdSpeOptionsByParent,
 } from 'src/api/productParam'
-import { specDownload, codeExport } from 'src/api/productPlus'
+import {
+  specDownload,
+  codeExport,
+  recordDetailImage,
+} from 'src/api/productPlus'
 import { getProdLogList } from 'src/api/log'
-import {getBrandOptions} from 'src/api/organization'
+import { getBrandOptions } from 'src/api/organization'
 //custom validate
 //const validDecimal = value => value.toString().split('.')[1].length <= 2
 export default {
@@ -1156,12 +1160,12 @@ export default {
         gmtCreateEnd: null,
         gmtModifiedStart: null,
         gmtModifiedEnd: null,
-        prodFamily:null,
-        prodType:null,
-        bigType:null,
-        middleType:null,
-        smallType:null,
-        comId:null
+        prodFamily: null,
+        prodType: null,
+        bigType: null,
+        middleType: null,
+        smallType: null,
+        comId: null,
       },
       loading: false,
       excelLoading: false,
@@ -1180,13 +1184,13 @@ export default {
         'retailPrice',
         'supplyPrice',
         'costPrice',
-        'codeIsSync'
+        'codeIsSync',
       ],
       separator: 'horizontal',
       serverPagination: {
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 10 // specifying this determines pagination is server-side
+        rowsNumber: 10, // specifying this determines pagination is server-side
       },
       serverData: [],
       columns: [
@@ -1233,14 +1237,14 @@ export default {
         { name: 'pakMat', label: '包装材质', field: 'pakMat' },
         { name: 'pakSize', label: '单品包装尺寸', field: 'pakSize' },
         { name: 'gmtCreate', label: '创建时间', field: 'gmtCreate' },
-        { name: 'gmtModified', label: '修改时间', field: 'gmtModified' }
+        { name: 'gmtModified', label: '修改时间', field: 'gmtModified' },
       ],
       //choose style dialog
       chooseStyleDialogOpened: false,
       prodStyleAutoSearch: {
         id: '',
         prodStyle: '',
-        styleName: ''
+        styleName: '',
       },
       //modal
       mainCodeModalOpened: false,
@@ -1276,7 +1280,7 @@ export default {
         prodDesc: '',
         thumbnail: '',
         isDel: false,
-        isSync: false
+        isSync: false,
       },
       isNotThird: false,
       productCode: {
@@ -1317,7 +1321,7 @@ export default {
         grossWeight: '',
         singleWeight: '',
         pakMat: '',
-        pakSize: ''
+        pakSize: '',
       },
       paramList: [],
       prodColorOptions: [],
@@ -1350,7 +1354,7 @@ export default {
       bigTypeOptions: [],
       middleTypeOptions: [],
       //20210419
-      comOptions:[]
+      comOptions: [],
     }
   },
   validations: {
@@ -1361,34 +1365,34 @@ export default {
         required,
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       supplyPrice: {
         required,
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       costPrice: {
         required,
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       costPrice2: {
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       costPrice3: {
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       costPrice4: {
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       numModel: { integer },
       boxNum: { integer },
@@ -1398,7 +1402,7 @@ export default {
       prodCycle: { integer },
       grossWeight: { integer },
       singleWeight: { integer },
-      prodMat: { maxLength: maxLength(100) }
+      prodMat: { maxLength: maxLength(100) },
       // tRetailPrice: {
       //   decimal,
       //   minValue: minValue(0),
@@ -1414,7 +1418,7 @@ export default {
       //   minValue: minValue(0),
       //   maxValue: maxValue(999999)
       // }
-    }
+    },
   },
   computed: {
     permissions() {
@@ -1441,7 +1445,7 @@ export default {
     },
     brandColor() {
       return this.$store.getters['user/brandColor']
-    }
+    },
   },
   watch: {
     //control v-show of reset btn
@@ -1471,7 +1475,7 @@ export default {
         } else {
           this.searchBtnExist = false
         }
-      }
+      },
     },
     //reset the prodClass when it changes
     'searchForm.prodFamily': function(newVal, oldVal) {
@@ -1484,7 +1488,7 @@ export default {
         this.searchForm.middleType = ''
         this.searchForm.smallType = ''
         this.prodTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
       }
     },
@@ -1496,7 +1500,7 @@ export default {
         this.searchForm.middleType = ''
         this.searchForm.smallType = ''
         this.bigTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
       }
     },
@@ -1507,7 +1511,7 @@ export default {
         this.searchForm.smallType = ''
         newVal += ''
         this.middleTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
       }
     },
@@ -1516,10 +1520,10 @@ export default {
         this.searchForm.smallType = ''
         newVal += ''
         this.smallTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
       }
-    }
+    },
   },
   methods: {
     checkAuth(auth) {
@@ -1585,14 +1589,14 @@ export default {
       this.searchFormDialogOpened = false
       this.serverPagination.page = 1
       this.request({
-        pagination: this.serverPagination
+        pagination: this.serverPagination,
       })
       this.resetBtnExist = true
     },
     changePage() {
       this.serverPagination.page = this.pageChanged
       this.request({
-        pagination: this.serverPagination
+        pagination: this.serverPagination,
       })
     },
     printSth() {
@@ -1601,7 +1605,7 @@ export default {
     notify(type, message) {
       this.$q.notify({
         message: message,
-        type: type
+        type: type,
       })
     },
     //choose style
@@ -1613,13 +1617,13 @@ export default {
       this.chooseStyleDialogOpened = true
     },
     autoProdStyleSearch(terms, done) {
-      getProdStyleOptions(this.prodStyleAutoSearch).then(response => {
+      getProdStyleOptions(this.prodStyleAutoSearch).then((response) => {
         let data = response.data.data
         done(data)
       })
     },
     autoStyleNameSearch(terms, done) {
-      getProdStyleOptions(this.prodStyleAutoSearch).then(response => {
+      getProdStyleOptions(this.prodStyleAutoSearch).then((response) => {
         let data = response.data.data
         done(data)
       })
@@ -1639,7 +1643,7 @@ export default {
         this.notify('warning', '请先选择一个现有的款式')
         return
       }
-      getProdStyleById(id).then(response => {
+      getProdStyleById(id).then((response) => {
         let productStyle = response.data.data
         //check prodType permission
         let pt = productStyle.prodType
@@ -1710,16 +1714,16 @@ export default {
         this.productCode.prodName = this.productStyle.styleName
         this.mainCodeModalOpened = true
         let bigType = this.productStyle.bigType
-        getProdSpeOptionsByParent(bigType).then(response => {
+        getProdSpeOptionsByParent(bigType).then((response) => {
           let data = response.data.data
           this.prodSpeOptions = data
         })
         this.prodCatOptions = this.catList.filter(
-          item => item.parentId == bigType
+          (item) => item.parentId == bigType
         )
         let middleType = this.productStyle.middleType
         this.smallTypeOptions = this.classList.filter(
-          item => item.parentId == middleType
+          (item) => item.parentId == middleType
         )
       } else if (action === 'update') {
         // if (
@@ -1730,7 +1734,7 @@ export default {
         //   return
         // }
         this.modalActionName = '修改商品信息'
-        getProdCodeById(id).then(response => {
+        getProdCodeById(id).then((response) => {
           let product = response.data.data
           //check prodType permission
           let pt = product.prodType
@@ -1753,16 +1757,16 @@ export default {
             this.mainCodeModalOpened = true
           })
           let bigType = this.productStyle.bigType
-          getProdSpeOptionsByParent(bigType).then(response => {
+          getProdSpeOptionsByParent(bigType).then((response) => {
             let data = response.data.data
             this.prodSpeOptions = data
           })
           let middleType = this.productStyle.middleType
           this.smallTypeOptions = this.classList.filter(
-            item => item.parentId == middleType
+            (item) => item.parentId == middleType
           )
           this.prodCatOptions = this.catList.filter(
-            item => item.parentId == bigType
+            (item) => item.parentId == bigType
           )
         })
       }
@@ -1791,7 +1795,7 @@ export default {
       this.productCode.gmtCreate = Date.now()
       this.productCode.gmtModified = Date.now()
       addProdCode(this.productCode, thirdFlag)
-        .then(response => {
+        .then((response) => {
           this.mainCodeModalOpened = false
           this.newLoading = false
           let data = response.data
@@ -1805,10 +1809,10 @@ export default {
           )
           this.notify('positive', data.msg)
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.newLoading = false
         })
     },
@@ -1825,7 +1829,7 @@ export default {
       this.productCode.gmtCreate = ''
       this.productCode.gmtModified = ''
       updateProdCode(this.productCode, thirdFlag)
-        .then(response => {
+        .then((response) => {
           this.mainCodeModalOpened = false
           this.modifyLoading = false
           let data = response.data
@@ -1839,10 +1843,10 @@ export default {
           )
           this.notify('positive', data.msg)
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.modifyLoading = false
         })
     },
@@ -1893,7 +1897,7 @@ export default {
         this.$refs.imageUpload.reset()
         this.imageUploadDialog = false
         this.request({
-          pagination: this.serverPagination
+          pagination: this.serverPagination,
         })
       } else {
         this.notify('negative', response.msg)
@@ -1913,20 +1917,20 @@ export default {
       }
       this.excelLoading = true
       codeExport(this.searchForm)
-        .then(response => {
+        .then((response) => {
           this.fileDownload(
             response.data,
             '商品编号导出' + this.formatDate(Date.now()) + '.xls'
           )
           this.excelLoading = false
         })
-        .catch(error => {
+        .catch((error) => {
           this.excelLoading = false
         })
     },
     //download specification
     downloadSpec(id, name) {
-      specDownload(id).then(response => {
+      specDownload(id).then((response) => {
         this.fileDownload(response.data, name + '商品说明书.pdf')
       })
     },
@@ -1949,12 +1953,12 @@ export default {
     // prodLog
     openProdLogModal(type, id) {
       getProdLogList(type, id)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.timelineBeanList = data
           this.prodLogModalOpened = true
         })
-        .catch(error => {})
+        .catch((error) => {})
     },
     //switch bind
     openSwitchBindDialog(id, oldStyleId) {
@@ -1982,12 +1986,12 @@ export default {
         this.notify('warning', '请选择一个和当前产品不同的款式')
         return
       }
-      switchBind(this.switchOldStyleId, id, this.switchId).then(response => {
+      switchBind(this.switchOldStyleId, id, this.switchId).then((response) => {
         let data = response.data
         this.notify('positive', data.msg)
         this.switchBindDialogOpened = false
         this.request({
-          pagination: this.serverPagination
+          pagination: this.serverPagination,
         })
         Object.assign(
           this.prodStyleAutoSearch,
@@ -2005,38 +2009,38 @@ export default {
       this.searchForm.page = pagination.page
       this.searchForm.row = pagination.rowsPerPage
       getProdCodeList(this.searchForm)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.serverPagination = pagination
           this.serverPagination.rowsNumber = data.total
           this.serverData = data.rows
           this.loading = false
-          this.pageChanged=pagination.page
+          this.pageChanged = pagination.page
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
         })
-    }
+    },
   },
   mounted() {
     this.request({
-      pagination: this.serverPagination
+      pagination: this.serverPagination,
     })
-    getProdParamOptions().then(response => {
+    getProdParamOptions().then((response) => {
       let data = response.data.data
       this.paramList = data
-      this.prodColorOptions = data.filter(item => item.parentId == 466)
+      this.prodColorOptions = data.filter((item) => item.parentId == 466)
     })
     //fetch all the categories
-    getProdCatOptions().then(response => {
+    getProdCatOptions().then((response) => {
       let data = response.data.data
       this.catList = data
     })
     //once mounted, fetch some product parameters
-    getProdClassOptions().then(response => {
+    getProdClassOptions().then((response) => {
       let data = response.data.data
       this.classList = data
-      let list = data.filter(item => item.parentId == 0)
+      let list = data.filter((item) => item.parentId == 0)
       // abandon mat
       for (let i = 0; i < list.length; i++) {
         let id = list[i].value
@@ -2046,11 +2050,11 @@ export default {
       }
     })
     //20210419品牌
-    getBrandOptions().then(response => {
+    getBrandOptions().then((response) => {
       let data = response.data.data
       this.comOptions = data
     })
-  }
+  },
 }
 </script>
 
