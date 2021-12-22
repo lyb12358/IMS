@@ -2059,8 +2059,8 @@ export default {
       this.detailImageList.splice(idx, 1)
     },
     confirmDrag() {
-      if (this.detailImageList.length > 5) {
-        this.notify('warning', '最多允许5张，请删除多余的图片再确认！')
+      if (this.detailImageList.length > 10) {
+        this.notify('warning', '最多允许10张，请删除多余的图片再确认！')
         return
       }
       let imageString = this.detailImageList.join(';')
