@@ -736,6 +736,7 @@
                     <q-checkbox v-model="rolePermission" label="维护线上" color="warning" :val="191"/>
                     <q-checkbox v-model="rolePermission" label="维护素寐线上" color="warning" :val="194"/>
                     <q-checkbox v-model="rolePermission" label="维护素寐实体" color="warning" :val="195"/>
+                    <q-checkbox v-model="rolePermission" label="维护常规窗帘" color="warning" :val="196"/>
                   </div>
                 </q-collapsible>
                 <q-collapsible label="批量操作(点击展开)">
