@@ -392,7 +392,7 @@
             <div class="col-xs-12 col-sm-6 col-md-3">
               <q-field :error="$v.material.matCode.$error" error-label="物料编号必填，且不超过15位">
                 <q-input
-                  v-model="material.matCode"
+                  v-model.trim="material.matCode"
                   :readonly="modalActionName==='修改物料'?true:false"
                   class="no-margin"
                   float-label="物料编号"
@@ -696,7 +696,7 @@ import {
   numeric,
   integer,
   decimal,
-  required
+  required,
 } from 'vuelidate/lib/validators'
 import { getOrgList } from 'src/api/organization'
 import { getMatList, getMatById, addMat, updateMat } from 'src/api/material'
@@ -706,7 +706,7 @@ import {
   getProdParamOptions,
   getProdParamOptionsByParent,
   getProdCatOptions,
-  getProdSpeOptionsByParent
+  getProdSpeOptionsByParent,
 } from 'src/api/productParam'
 import { specDownload } from 'src/api/productPlus'
 import { getProdLogList } from 'src/api/log'
@@ -731,7 +731,7 @@ export default {
         gmtCreateEnd: null,
         gmtModifiedStart: null,
         gmtModifiedEnd: null,
-        comId: null
+        comId: null,
       },
       loading: false,
       modifyLoading: false,
@@ -747,13 +747,13 @@ export default {
         'smallType',
         'boxNum',
         'boxVolume',
-        'isSync'
+        'isSync',
       ],
       separator: 'horizontal',
       serverPagination: {
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 5 // specifying this determines pagination is server-side
+        rowsNumber: 5, // specifying this determines pagination is server-side
       },
       serverData: [],
       columns: [
@@ -782,7 +782,7 @@ export default {
         { name: 'boxWeight', label: '箱重量', field: 'boxWeight' },
         { name: 'isSync', label: '是否同步', field: 'isSync' },
         { name: 'gmtCreate', label: '创建时间', field: 'gmtCreate' },
-        { name: 'gmtModified', label: '修改时间', field: 'gmtModified' }
+        { name: 'gmtModified', label: '修改时间', field: 'gmtModified' },
       ],
       //modal
       mainMatModalOpened: false,
@@ -813,7 +813,7 @@ export default {
         boxWeight: '',
         isDel: false,
         isSync: false,
-        comId: null
+        comId: null,
       },
       classList: [],
       matFamilyOptions: [],
@@ -844,7 +844,7 @@ export default {
       matLogModalOpened: false,
       timelineBeanList: [],
       //20210419
-      comOptions: []
+      comOptions: [],
     }
   },
   validations: {
@@ -865,19 +865,19 @@ export default {
       retailPrice: {
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       supplyPrice: {
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
+        maxValue: maxValue(999999),
       },
       costPrice: {
         decimal,
         minValue: minValue(0),
-        maxValue: maxValue(999999)
-      }
-    }
+        maxValue: maxValue(999999),
+      },
+    },
   },
   computed: {
     permissions() {
@@ -888,7 +888,7 @@ export default {
     },
     brandColor() {
       return this.$store.getters['user/brandColor']
-    }
+    },
   },
   watch: {
     //control v-show of reset btn
@@ -912,7 +912,7 @@ export default {
         } else {
           this.searchBtnExist = false
         }
-      }
+      },
     },
     //reset the matClass when it changes
     'material.matFamily': function(newVal, oldVal) {
@@ -929,7 +929,7 @@ export default {
         this.material.matCat = ''
         this.material.matSpe = ''
         this.matTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
       }
     },
@@ -945,7 +945,7 @@ export default {
         this.material.matCat = ''
         this.material.matSpe = ''
         this.bigTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
       }
     },
@@ -956,24 +956,26 @@ export default {
         this.material.smallType = ''
         this.material.matCat = ''
         this.material.matSpe = ''
-        getProdSpeOptionsByParent(newVal).then(response => {
+        getProdSpeOptionsByParent(newVal).then((response) => {
           let data = response.data.data
           this.matSpeOptions = data
         })
         this.middleTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
-        this.matCatOptions = this.catList.filter(item => item.classId == newVal)
+        this.matCatOptions = this.catList.filter(
+          (item) => item.classId == newVal
+        )
       }
     },
     'material.middleType': function(newVal, oldVal) {
       if (this.mainMatModalOpened && newVal != '') {
         this.material.smallType = ''
         this.smallTypeOptions = this.classList.filter(
-          item => item.parentId == newVal
+          (item) => item.parentId == newVal
         )
       }
-    }
+    },
   },
   methods: {
     checkAuth(auth) {
@@ -1003,7 +1005,7 @@ export default {
       this.searchFormDialogOpened = false
       this.serverPagination.page = 1
       this.request({
-        pagination: this.serverPagination
+        pagination: this.serverPagination,
       })
       this.resetBtnExist = true
     },
@@ -1013,7 +1015,7 @@ export default {
     notify(type, message) {
       this.$q.notify({
         message: message,
-        type: type
+        type: type,
       })
     },
     //modal input depart permission check
@@ -1040,7 +1042,7 @@ export default {
         //   return
         // }
         this.modalActionName = '修改'
-        getMatById(id).then(response => {
+        getMatById(id).then((response) => {
           let material = response.data.data
           //check matType permission
           let mt = material.matType
@@ -1054,7 +1056,7 @@ export default {
           }
           Object.assign(this.material, material)
           let bigType = material.bigType
-          getProdSpeOptionsByParent(bigType).then(response => {
+          getProdSpeOptionsByParent(bigType).then((response) => {
             let data = response.data.data
             this.matSpeOptions = data
           })
@@ -1063,19 +1065,19 @@ export default {
           let matType = material.matType
           let middleType = material.middleType
           this.matTypeOptions = this.classList.filter(
-            item => item.parentId == matFamily
+            (item) => item.parentId == matFamily
           )
           this.bigTypeOptions = this.classList.filter(
-            item => item.parentId == matType
+            (item) => item.parentId == matType
           )
           this.middleTypeOptions = this.classList.filter(
-            item => item.parentId == bigType
+            (item) => item.parentId == bigType
           )
           this.smallTypeOptions = this.classList.filter(
-            item => item.parentId == middleType
+            (item) => item.parentId == middleType
           )
           this.matCatOptions = this.catList.filter(
-            item => item.classId == bigType
+            (item) => item.classId == bigType
           )
           this.$nextTick(() => {
             this.mainMatModalOpened = true
@@ -1151,7 +1153,7 @@ export default {
         this.$refs.imageUpload.reset()
         this.imageUploadDialog = false
         this.request({
-          pagination: this.serverPagination
+          pagination: this.serverPagination,
         })
       } else {
         this.notify('negative', response.msg)
@@ -1202,17 +1204,17 @@ export default {
       this.material.isSync = 1
       this.material.gmtCreate = Date.now()
       addMat(this.material)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.mainMatModalOpened = false
           this.newLoading = false
           Object.assign(this.material, this.$options.data.call(this).material)
           this.notify('positive', data.msg)
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.newLoading = false
         })
     },
@@ -1228,17 +1230,17 @@ export default {
       this.material.gmtCreate = ''
       this.material.gmtModified = ''
       updateMat(this.material)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.mainMatModalOpened = false
           this.modifyLoading = false
           Object.assign(this.material, this.$options.data.call(this).material)
           this.notify('positive', data.msg)
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.modifyLoading = false
         })
     },
@@ -1250,7 +1252,7 @@ export default {
     },
     //download specification
     downloadSpec(id, name) {
-      specDownload(id).then(response => {
+      specDownload(id).then((response) => {
         this.fileDownload(response.data, name + '物料说明书.pdf')
       })
     },
@@ -1273,12 +1275,12 @@ export default {
     // matLog
     openMatLogModal(type, id) {
       getProdLogList(type, id)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.timelineBeanList = data
           this.matLogModalOpened = true
         })
-        .catch(error => {})
+        .catch((error) => {})
     },
     // delete mat
     deleteMat() {
@@ -1298,28 +1300,28 @@ export default {
       this.searchForm.page = pagination.page
       this.searchForm.row = pagination.rowsPerPage
       getMatList(this.searchForm)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.serverPagination = pagination
           this.serverPagination.rowsNumber = data.total
           this.serverData = data.rows
           this.loading = false
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
         })
-    }
+    },
   },
   mounted() {
     // once mounted, we need to trigger the initial server data fetch
     this.request({
-      pagination: this.serverPagination
+      pagination: this.serverPagination,
     })
     //once mounted, fetch some product parameters
-    getProdClassOptions().then(response => {
+    getProdClassOptions().then((response) => {
       let data = response.data.data
       this.classList = data
-      let list = data.filter(item => item.parentId == 0)
+      let list = data.filter((item) => item.parentId == 0)
       // abandon prod
       for (let i = 0; i < list.length; i++) {
         let id = list[i].value
@@ -1328,25 +1330,25 @@ export default {
         }
       }
     })
-    getProdParamOptions().then(response => {
+    getProdParamOptions().then((response) => {
       let data = response.data.data
       this.paramList = data
-      this.matAttrOptions = data.filter(item => item.parentId == 606)
-      this.matYearOptions = data.filter(item => item.parentId == 464)
-      this.matUnitOptions = data.filter(item => item.parentId == 458)
-      this.matColorOptions = data.filter(item => item.parentId == 466)
+      this.matAttrOptions = data.filter((item) => item.parentId == 606)
+      this.matYearOptions = data.filter((item) => item.parentId == 464)
+      this.matUnitOptions = data.filter((item) => item.parentId == 458)
+      this.matColorOptions = data.filter((item) => item.parentId == 466)
     })
     //fetch all the categories
-    getProdCatOptions().then(response => {
+    getProdCatOptions().then((response) => {
       let data = response.data.data
       this.catList = data
     })
     //20210419品牌
-    getBrandOptions().then(response => {
+    getBrandOptions().then((response) => {
       let data = response.data.data
       this.comOptions = data
     })
-  }
+  },
 }
 </script>
 

@@ -893,12 +893,12 @@
           <div class="row gutter-sm">
             <div class="col-xs-12 col-sm-6 col-md-3">
               <q-field :error="$v.productCode.prodCode.$error" error-label="编号必填，且不超过20位">
-                <q-input v-model="productCode.prodCode" class="no-margin" float-label="编号"/>
+                <q-input v-model.trim="productCode.prodCode" class="no-margin" float-label="编号"/>
               </q-field>
             </div>
             <div class="col-xs-12 col-sm-6 col-md-3">
               <q-field :error="$v.productCode.prodName.$error" error-label="名称必填，且不超过30位">
-                <q-input v-model="productCode.prodName" class="no-margin" float-label="名称"/>
+                <q-input v-model.trim="productCode.prodName" class="no-margin" float-label="名称"/>
               </q-field>
             </div>
             <div class="col-xs-12 col-sm-6 col-md-3">

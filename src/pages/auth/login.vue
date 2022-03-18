@@ -60,13 +60,13 @@
         </q-card>
         <q-card style="position:absolute;bottom:-4rem;width:100%;"
                 class="no-shadow">
-          <q-card-main style="text-align:center;color:white;">
+          <q-card-main style="text-align:center;color:white;" @click.native="openURL('https://beian.miit.gov.cn')">
             <small>
               博洋家纺信息中心
             </small>
-            <br>
-            <small>
-              IT Center of Beyond Home Textile
+            <br>        
+            <small >
+              浙ICP备17039878号-4
             </small>
           </q-card-main>
         </q-card>
@@ -192,6 +192,7 @@
 </template>
 
 <script>
+import { openURL } from 'quasar'
 import { minLength, required } from 'vuelidate/lib/validators'
 export default {
   name: 'Login',
@@ -200,21 +201,22 @@ export default {
       loading: false,
       user: {
         account: '',
-        password: ''
-      }
+        password: '',
+      },
     }
   },
   validations: {
     user: {
       account: { required },
-      password: { required, minLength: minLength(6) }
-    }
+      password: { required, minLength: minLength(6) },
+    },
   },
   methods: {
+    openURL,
     notify(type, message) {
       this.$q.notify({
         message: message,
-        type: type
+        type: type,
       })
     },
     resetLogin() {
@@ -229,13 +231,13 @@ export default {
       this.loading = true
       this.$store
         .dispatch('user/Login', this.user)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.$router.push('/index')
           this.loading = false
           this.notify('positive', data.msg)
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
         })
     },
@@ -245,13 +247,13 @@ export default {
           title: '警告',
           message: '确定要退出吗',
           ok: '确定',
-          cancel: '我点错了'
+          cancel: '我点错了',
         })
         .then(() => {
           navigator.app.exitApp()
         })
         .catch(() => {})
-    }
+    },
   },
   created() {
     if (!this.$q.platform.is.cordova) {
@@ -270,7 +272,7 @@ export default {
   beforeDestroy() {
     //remove the event listener
     document.removeEventListener('backbutton', this.onBackKeyDown, false)
-  }
+  },
 }
 </script>
 
