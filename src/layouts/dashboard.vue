@@ -217,7 +217,7 @@
           label="密码"
           :label-width="4"
           :error="$v.user.firstPassword.$error"
-          error-label="密码至少6位"
+          error-label="密码6位至20位，至少有一位数字和字母"
         >
           <q-input v-model.trim="user.firstPassword" type="password"/>
         </q-field>
@@ -227,7 +227,7 @@
           label="再次输入"
           :label-width="4"
           :error="$v.user.secondPassword.$error"
-          error-label="至少6位，且要与第一栏相同"
+          error-label="要与第一栏相同"
         >
           <q-input v-model.trim="user.secondPassword" type="password"/>
         </q-field>
@@ -242,7 +242,12 @@
 
 <script>
 import { openURL } from 'quasar'
-import { minLength, required, sameAs } from 'vuelidate/lib/validators'
+import {
+  minLength,
+  required,
+  sameAs,
+  maxLength,
+} from 'vuelidate/lib/validators'
 import { updatePassword } from 'src/api/userManage'
 export default {
   name: 'dashboard',
@@ -253,19 +258,30 @@ export default {
       passwordDialogOpened: false,
       user: {
         firstPassword: '',
-        secondPassword: ''
-      }
+        secondPassword: '',
+      },
     }
   },
   validations: {
     user: {
-      firstPassword: { required, minLength: minLength(6) },
+      firstPassword: {
+        required,
+        minLength: minLength(6),
+        maxLength: maxLength(20),
+        valid: function(value) {
+          const containsUppercase = /[A-Z]/.test(value)
+          const containsLowercase = /[a-z]/.test(value)
+          const containsNumber = /[0-9]/.test(value)
+          const containsSpecial = /[#?!@$%^&*-]/.test(value)
+          return (containsUppercase || containsLowercase) && containsNumber
+        },
+      },
       secondPassword: {
         required,
         minLength: minLength(6),
-        sameAsPassword: sameAs('firstPassword')
-      }
-    }
+        sameAsPassword: sameAs('firstPassword'),
+      },
+    },
   },
   computed: {
     permissions() {
@@ -318,7 +334,7 @@ export default {
       } else {
         return 'statics/sad.svg'
       }
-    }
+    },
   },
   watch: {
     brandFlag: function(newVal, oldVal) {
@@ -335,7 +351,7 @@ export default {
       } else {
         this.$store.commit('user/SetBrandColor', 'light-green-6')
       }
-    }
+    },
   },
   methods: {
     openURL,
@@ -355,7 +371,7 @@ export default {
           title: '退出登录',
           message: '你确定要退出登录吗？',
           ok: '确定',
-          cancel: '取消'
+          cancel: '取消',
         })
         .then(() => {
           this.$store.dispatch('user/FedLogout').then(() => {
@@ -367,7 +383,7 @@ export default {
     notify(type, message) {
       this.$q.notify({
         message: message,
-        type: type
+        type: type,
       })
     },
     resetScroll(el, done) {
@@ -387,16 +403,16 @@ export default {
         return
       }
       this.$v.user.$reset()
-      updatePassword(id, password).then(response => {
+      updatePassword(id, password).then((response) => {
         let data = response.data
         this.notify('positive', data.msg)
         this.passwordDialogOpened = false
       })
-    }
+    },
   },
   mounted() {
     this.brandFlag = this.brandColor
-  }
+  },
 }
 </script>
 

@@ -233,7 +233,7 @@ import {
   updateUser,
   getRoleOptions,
   getUserRole,
-  updateUserRole
+  updateUserRole,
 } from 'src/api/userManage'
 import {
   minLength,
@@ -243,7 +243,7 @@ import {
   numeric,
   integer,
   decimal,
-  required
+  required,
 } from 'vuelidate/lib/validators'
 export default {
   data() {
@@ -253,7 +253,7 @@ export default {
         page: 0,
         row: 0,
         account: '',
-        name: ''
+        name: '',
       },
       loading: false,
       newUserLoading: false,
@@ -264,7 +264,7 @@ export default {
       serverPagination: {
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 10 // specifying this determines pagination is server-side
+        rowsNumber: 10, // specifying this determines pagination is server-side
       },
       serverData: [],
       columns: [
@@ -274,63 +274,63 @@ export default {
         {
           name: 'status',
           label: '状态',
-          field: 'status'
+          field: 'status',
         },
-        { name: 'operation', label: '操作', field: 'operation' }
+        { name: 'operation', label: '操作', field: 'operation' },
       ],
       //main modal
       mainUserModalOpened: false,
       modalActionName: '',
-      user: { name: '', account: '',id:'' },
+      user: { name: '', account: '', id: '' },
       //role manage
       mainUserRoleModalOpened: false,
       userIdChosen: '',
       roleOptions: [],
-      roleList: []
+      roleList: [],
     }
   },
   validations: {
-    user:{
+    user: {
       name: { required, maxLength: maxLength(20) },
-      account: { required, maxLength: maxLength(20) }
-    }
-  },  
+      account: { required, maxLength: maxLength(20) },
+    },
+  },
   computed: {
     brandColor() {
       return this.$store.getters['user/brandColor']
-    }
+    },
   },
   methods: {
     notify(type, message) {
       this.$q.notify({
         message: message,
-        type: type
+        type: type,
       })
     },
     roleManage(id) {
       this.notify('warning', 'Ok,Ok~')
     },
-    deleteUser(name,id,account) {
+    deleteUser(name, id, account) {
       this.$q
         .dialog({
           title: '删除用户',
           message: '你确定要删除' + name + '这个用户吗？',
           ok: '确定',
-          cancel: '取消'
+          cancel: '取消',
         })
         .then(() => {
-          this.user.name=name
-          this.user.account=account
-          this.user.id=id
-          this.user.status=1
-          this.user.password=111111
-          this.user.isDel=1
-          updateUser(this.user).then(response => {
+          this.user.name = name
+          this.user.account = account
+          this.user.id = id
+          this.user.status = 1
+          this.user.password = 111111
+          this.user.isDel = 1
+          updateUser(this.user).then((response) => {
             let data = response.data
             this.notify('positive', data.msg)
             this.request({
-          pagination: this.serverPagination
-        })
+              pagination: this.serverPagination,
+            })
           })
         })
     },
@@ -339,14 +339,14 @@ export default {
       this.$nextTick(() => {
         this.serverPagination.page = 1
         this.request({
-          pagination: this.serverPagination
+          pagination: this.serverPagination,
         })
       })
     },
     search() {
       this.serverPagination.page = 1
       this.request({
-        pagination: this.serverPagination
+        pagination: this.serverPagination,
       })
     },
     //main modal
@@ -359,24 +359,24 @@ export default {
       }
     },
     newUser() {
-       this.$v.user.$touch()
+      this.$v.user.$touch()
       if (this.$v.user.$invalid) {
         return
       }
       this.$v.user.$reset()
       this.newUserLoading = true
       addUser(this.user)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.mainUserModalOpened = false
           this.newUserLoading = false
           Object.assign(this.user, this.$options.data.call(this).user)
           this.notify('positive', data.msg)
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.newUserLoading = false
         })
     },
@@ -391,10 +391,12 @@ export default {
           title: '重置密码',
           message: '你确定要重置' + name + '的密码吗？',
           ok: '确定',
-          cancel: '取消'
+          cancel: '取消',
         })
         .then(() => {
-          updatePassword(id, '111111').then(response => {
+          let date = new Date()
+          let newPw = 'by' + date.getFullYear()
+          updatePassword(id, newPw).then((response) => {
             let data = response.data
             this.notify('positive', data.msg)
           })
@@ -404,17 +406,17 @@ export default {
     openRoleModel(id) {
       this.userIdChosen = id
       getRoleOptions()
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.roleOptions = data
         })
-        .catch(error => {})
+        .catch((error) => {})
       getUserRole(id)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.roleList = data
         })
-        .catch(error => {})
+        .catch((error) => {})
       this.$nextTick(() => {
         this.mainUserRoleModalOpened = true
       })
@@ -422,16 +424,16 @@ export default {
     modifyUseRole() {
       this.modifyUserRoleLoading = true
       updateUserRole(this.userIdChosen, this.roleList)
-        .then(response => {
+        .then((response) => {
           let data = response.data
           this.notify('positive', data.msg)
           this.mainUserRoleModalOpened = false
           this.modifyUserRoleLoading = false
           this.request({
-            pagination: this.serverPagination
+            pagination: this.serverPagination,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           this.modifyUserRoleLoading = false
         })
     },
@@ -441,23 +443,23 @@ export default {
       this.searchForm.page = pagination.page
       this.searchForm.row = pagination.rowsPerPage
       getUserList(this.searchForm)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.serverPagination = pagination
           this.serverPagination.rowsNumber = data.total
           this.serverData = data.rows
           this.loading = false
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
         })
-    }
+    },
   },
   mounted() {
     this.request({
-      pagination: this.serverPagination
+      pagination: this.serverPagination,
     })
-  }
+  },
 }
 </script>
 

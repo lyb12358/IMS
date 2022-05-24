@@ -44,7 +44,7 @@ module.exports = function (ctx) {
     },
     devServer: {
       //https: true,
-      port: 9090,
+      port: 9089,
       open: true, // opens browser window automatically
       index: '/',
       proxy: {
