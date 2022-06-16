@@ -7,9 +7,15 @@ export function getBatchLogList(searchForm) {
         data: searchForm
     })
 }
-export function addBatchDataSync(id) {
+export function addMatBatchDataSync(id) {
     return service({
-        url: '/batch/sync/' + id,
+        url: '/batch/sync/mat/' + id,
+        method: 'post'
+    })
+}
+export function addProdBatchDataSync(id) {
+    return service({
+        url: '/batch/sync/prod/' + id,
         method: 'post'
     })
 }

@@ -272,7 +272,7 @@ export default {
           const containsUppercase = /[A-Z]/.test(value)
           const containsLowercase = /[a-z]/.test(value)
           const containsNumber = /[0-9]/.test(value)
-          const containsSpecial = /[#?!@$%^&*-]/.test(value)
+          const containsSpecial = /[~_,#?!@$%^&*-]/.test(value)
           return (containsUppercase || containsLowercase) && containsNumber
         },
       },

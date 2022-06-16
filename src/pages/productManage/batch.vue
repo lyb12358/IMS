@@ -28,10 +28,34 @@
                @click="searchFormDialogOpened=true">
         </q-btn> -->
         <q-btn icon="mdi-file-import"
+               label="导入款式"
+               rounded
+               color="primary"
+               @click="openBatchDialog(1)">
+        </q-btn>
+        <q-btn icon="mdi-file-import"
+               label="导入编号"
+               rounded
+               color="primary"
+               @click="openBatchDialog(2)">
+        </q-btn>
+        <q-btn icon="mdi-file-import"
                label="导入物料"
                rounded
                color="primary"
                @click="openBatchDialog(3)">
+        </q-btn>
+        <q-btn icon="mdi-file-excel"
+               label="款式模板"
+               rounded
+               color="secondary"
+               @click="downloadImportModel('styleImportModel')">
+        </q-btn>
+        <q-btn icon="mdi-file-excel"
+               label="编号模板"
+               rounded
+               color="secondary"
+               @click="downloadImportModel('codeImportModel')">
         </q-btn>
         <q-btn icon="mdi-file-excel"
                label="物料模板"
@@ -73,7 +97,7 @@
                 style="text-align:center">{{ props.row.userName}}</q-td>
           <q-td key="batchType"
                 :props="props"
-                style="text-align:center">物料/辅料</q-td>
+                style="text-align:center">{{calType(props.row.batchType)}}</q-td>
           <q-td key="batchNum"
                 :props="props"
                 style="text-align:center">{{ props.row.batchNum}}</q-td>
@@ -101,7 +125,7 @@
                    rounded
                    :loading="syncLoading"
                    color="secondary"
-                   @click="syncBatch(props.row.id)">
+                   @click="syncBatch(props.row.id,props.row.batchType)">
               <q-tooltip>同步</q-tooltip>
             </q-btn>
           </q-td>
@@ -176,9 +200,13 @@ import {
   numeric,
   integer,
   decimal,
-  required
+  required,
 } from 'vuelidate/lib/validators'
-import { getBatchLogList, addBatchDataSync } from 'src/api/batch'
+import {
+  getBatchLogList,
+  addMatBatchDataSync,
+  addProdBatchDataSync,
+} from 'src/api/batch'
 import { importModelDownload } from 'src/api/productPlus'
 export default {
   data() {
@@ -186,7 +214,7 @@ export default {
       api: process.env.API,
       searchForm: {
         page: 0,
-        row: 0
+        row: 0,
       },
       loading: false,
       visibleColumns: [
@@ -195,13 +223,13 @@ export default {
         'batchNum',
         'gmtCreate',
         'isSync',
-        'operation'
+        'operation',
       ],
       separator: 'horizontal',
       serverPagination: {
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 10 // specifying this determines pagination is server-side
+        rowsNumber: 10, // specifying this determines pagination is server-side
       },
       serverData: [],
       columns: [
@@ -210,14 +238,14 @@ export default {
         { name: 'batchNum', label: '数量', field: 'batchNum' },
         { name: 'gmtCreate', label: '导入时间', field: 'gmtCreate' },
         { name: 'isSync', label: '是否同步', field: 'isSync' },
-        { name: 'operation', label: '操作', field: 'operation' }
+        { name: 'operation', label: '操作', field: 'operation' },
       ],
       syncLoading: false,
       //batch dialog
       batchFileUploadDialog: false,
-      batchFileUploadUrl: '/mat/batch',
+      batchFileUploadUrl: '',
       batchType: '',
-      importLoading: false
+      importLoading: false,
       //main modal
     }
   },
@@ -227,14 +255,25 @@ export default {
     },
     imsToken() {
       return this.$store.getters['user/token']
-    }
+    },
   },
   methods: {
     notify(type, message) {
       this.$q.notify({
         message: message,
-        type: type
+        type: type,
       })
+    },
+    calType(type) {
+      if (type == 1) {
+        return '款式'
+      } else if (type == 2) {
+        return '编号'
+      } else if (type == 3) {
+        return '物料/辅料'
+      } else {
+        return '未知'
+      }
     },
     formatDate(timeStamp) {
       return date.formatDate(timeStamp, 'YYYY-MM-DD HH:mm:ss')
@@ -244,20 +283,31 @@ export default {
       this.$nextTick(() => {
         this.serverPagination.page = 1
         this.request({
-          pagination: this.serverPagination
+          pagination: this.serverPagination,
         })
       })
     },
     search() {
       this.serverPagination.page = 1
       this.request({
-        pagination: this.serverPagination
+        pagination: this.serverPagination,
       })
     },
     //
     openBatchDialog(type) {
+      if (type == 1) {
+        this.batchType = 1
+        this.batchFileUploadUrl = '/prodStyle/batch'
+        this.batchFileUploadDialog = true
+      }
+      if (type == 2) {
+        this.batchType = 2
+        this.batchFileUploadUrl = '/prodCode/batch'
+        this.batchFileUploadDialog = true
+      }
       if (type == 3) {
         this.batchType = 3
+        this.batchFileUploadUrl = '/mat/batch'
         this.batchFileUploadDialog = true
       }
     },
@@ -282,7 +332,7 @@ export default {
         this.$refs.batchFileUpload.reset()
         this.batchFileUploadDialog = false
         this.request({
-          pagination: this.serverPagination
+          pagination: this.serverPagination,
         })
         this.importLoading = false
       } else {
@@ -299,7 +349,13 @@ export default {
     },
     //download importModel
     downloadImportModel(name) {
-      importModelDownload(name).then(response => {
+      importModelDownload(name).then((response) => {
+        if (name == 'styleImportModel') {
+          this.fileDownload(response.data, '商品款式导入模板.xls')
+        }
+        if (name == 'codeImportModel') {
+          this.fileDownload(response.data, '商品编号导入模板.xls')
+        }
         if (name == 'matImportModel') {
           this.fileDownload(response.data, '物料辅料导入模板.xls')
         }
@@ -321,18 +377,31 @@ export default {
       URL.revokeObjectURL(link.href)
       document.body.removeChild(link)
     },
-    syncBatch(id) {
+    syncBatch(id, type) {
       this.syncLoading = true
-      addBatchDataSync(id)
-        .then(response => {
-          this.syncLoading = false
-          this.request({
-            pagination: this.serverPagination
+      if (type == 3) {
+        addMatBatchDataSync(id)
+          .then((response) => {
+            this.syncLoading = false
+            this.request({
+              pagination: this.serverPagination,
+            })
           })
-        })
-        .catch(error => {
-          this.syncLoading = false
-        })
+          .catch((error) => {
+            this.syncLoading = false
+          })
+      } else if (type == 2) {
+        addProdBatchDataSync(id)
+          .then((response) => {
+            this.syncLoading = false
+            this.request({
+              pagination: this.serverPagination,
+            })
+          })
+          .catch((error) => {
+            this.syncLoading = false
+          })
+      }
     },
     //dataTable request
     request({ pagination }) {
@@ -340,23 +409,23 @@ export default {
       this.searchForm.page = pagination.page
       this.searchForm.row = pagination.rowsPerPage
       getBatchLogList(this.searchForm)
-        .then(response => {
+        .then((response) => {
           let data = response.data.data
           this.serverPagination = pagination
           this.serverPagination.rowsNumber = data.total
           this.serverData = data.rows
           this.loading = false
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
         })
-    }
+    },
   },
   mounted() {
     this.request({
-      pagination: this.serverPagination
+      pagination: this.serverPagination,
     })
-  }
+  },
 }
 </script>
 
