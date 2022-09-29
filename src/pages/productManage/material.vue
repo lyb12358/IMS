@@ -166,6 +166,8 @@
               :color="props.row.isSync?'positive':'negative'"
             />
           </q-td>
+          <q-td key="collectTime" :props="props" style="text-align:center">{{ props.row.collectTime}}</q-td>
+          <q-td key="vipPrice" :props="props" style="text-align:center">{{ props.row.vipPrice}}</q-td>
           <q-td
             key="gmtCreate"
             :props="props"
@@ -583,6 +585,16 @@
                 <q-input v-model="material.boxWeight" class="no-margin" float-label="箱重量"/>
               </q-field>
             </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <q-field :error="$v.material.collectTime.$error" error-label="请填写有效值">
+                <q-input v-model="material.collectTime" class="no-margin" float-label="取件时间"/>
+              </q-field>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <q-field :error="$v.material.vipPrice.$error" error-label="请填写有效值">
+                <q-input v-model="material.vipPrice" class="no-margin" float-label="会员价"/>
+              </q-field>
+            </div>
           </div>
         </div>
       </q-modal-layout>
@@ -781,6 +793,8 @@ export default {
         { name: 'boxVolume', label: '箱体积', field: 'boxVolume' },
         { name: 'boxWeight', label: '箱重量', field: 'boxWeight' },
         { name: 'isSync', label: '是否同步', field: 'isSync' },
+        { name: 'collectTime', label: '取件时间', field: 'collectTime' },
+        { name: 'vipPrice', label: '会员价', field: 'vipPrice' },
         { name: 'gmtCreate', label: '创建时间', field: 'gmtCreate' },
         { name: 'gmtModified', label: '修改时间', field: 'gmtModified' },
       ],
@@ -814,6 +828,8 @@ export default {
         isDel: false,
         isSync: false,
         comId: null,
+        collectTime: null,
+        vipPrice: null,
       },
       classList: [],
       matFamilyOptions: [],
@@ -862,6 +878,7 @@ export default {
       boxVolume: { decimal },
       boxWeight: { decimal },
       numModel: { integer },
+      collectTime: { integer },
       retailPrice: {
         decimal,
         minValue: minValue(0),
@@ -873,6 +890,11 @@ export default {
         maxValue: maxValue(999999),
       },
       costPrice: {
+        decimal,
+        minValue: minValue(0),
+        maxValue: maxValue(999999),
+      },
+      vipPrice: {
         decimal,
         minValue: minValue(0),
         maxValue: maxValue(999999),
