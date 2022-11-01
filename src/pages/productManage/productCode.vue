@@ -39,6 +39,16 @@
           @click="downloadExcel"
         ></q-btn>
         <q-btn
+          v-if="checkAuth(14)"
+          label="批量上传图片"
+          icon="mdi-image-multiple"
+          rounded
+          color="info"
+          @click="openBatchImageUpload()"
+        >
+          <q-tooltip>上传图片</q-tooltip>
+        </q-btn>
+        <q-btn
           icon="mdi-new-box"
           v-if="checkAuth(12)"
           label="新建"
@@ -1046,6 +1056,31 @@
         <q-btn color="primary" label="取消" @click="imageUploadCancel"/>
       </template>
     </q-dialog>
+    <!-- 2022 upload batch image -->
+    <q-dialog v-model="batchImageUploadDialog" prevent-close>
+      <span slot="title">批量上传图片</span>
+      <span slot="message">图片必须用产品编号命名，最多20张</span>
+      <div slot="body">
+        <q-uploader
+          ref="batchImageUpload"
+          :url="api+batchImageUploadUrl"
+          clearable
+          auto-expand
+          multiple
+          extensions='.jpg,.jpeg,.png'
+          hide-upload-button
+          float-label="批量上传图片（上限20）"
+          @uploaded="batchImageUploaded"
+          @fail="batchImageUploadedFail"
+          @add="addBatchImageFile"
+          @finish="batchImageUploadedFinish"
+        />
+      </div>
+      <template slot="buttons" slot-scope="props">
+        <q-btn color="primary" label="上传" :loading="uploadLoading" :disable="uploadBtn"  @click="batchImageUpload"/>
+        <q-btn color="primary" label="取消" @click="imageUploadCancel"/>
+      </template>
+    </q-dialog>
     <!-- prodLog -->
     <q-modal
       v-model="prodLogModalOpened"
@@ -1176,6 +1211,8 @@ export default {
       excelLoading: false,
       modifyLoading: false,
       newLoading: false,
+      uploadLoading: false,
+      uploadBtn: true,
       visibleColumns: [
         'prodCode',
         'codeThumbnail',
@@ -1343,6 +1380,9 @@ export default {
       expandName: '',
       imageUploadDialog: false,
       imageUploadUrl: '/imageUpload/prodCode',
+      //upload batch image
+      batchImageUploadDialog: false,
+      batchImageUploadUrl: '/imageUpload/prodCode/new',
       //prodLog
       prodLogModalOpened: false,
       timelineBeanList: [],
@@ -1894,7 +1934,9 @@ export default {
     },
     imageUploadCancel() {
       this.$refs.imageUpload.reset()
+      this.$refs.batchImageUpload.reset()
       this.imageUploadDialog = false
+      this.batchImageUploadDialog = false
     },
     // when image has just bean uploaded
     imageUploaded(file, xhr) {
@@ -1902,19 +1944,68 @@ export default {
       if (response.code == 20000) {
         this.notify('positive', response.msg)
         this.$refs.imageUpload.reset()
+        // this.$refs.batchImageUpload.reset()
         this.imageUploadDialog = false
+        // this.batchImageUploadDialog = false
+        // this.uploadLoading = false
         this.request({
           pagination: this.serverPagination,
         })
       } else {
         this.notify('negative', response.msg)
         this.$refs.imageUpload.reset()
+        // this.$refs.batchImageUpload.reset()
+        // this.uploadLoading = false
       }
     },
     // when it has encountered error while uploading
     imageUploadedFail(file, xhr) {
       let response = JSON.parse(xhr.response)
       this.notify('negative', response.data.msg)
+      this.uploadLoading = false
+    },
+    //batch image upload
+    openBatchImageUpload() {
+      this.batchImageUploadDialog = true
+      this.uploadBtn = true
+    },
+    addBatchImageFile(files) {
+      if (files.length > 20) {
+        this.$refs.batchImageUpload.reset()
+        this.notify('warning', '一次性上传图片数量不能超过20张')
+        return
+      }
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].size > 5 * 1024 * 1024) {
+          this.$refs.batchImageUpload.reset()
+          this.notify('warning', '图片不能大于5MB')
+          return
+        }
+      }
+      this.uploadBtn = false
+    },
+    batchImageUpload() {
+      this.$refs.batchImageUpload.upload()
+      this.uploadLoading = true
+    },
+    batchImageUploaded(file, xhr) {
+      let response = JSON.parse(xhr.response)
+      if (response.code == 20000) {
+        this.notify('positive', response.msg)
+      } else {
+        this.notify('negative', response.msg)
+      }
+    },
+    batchImageUploadedFail(file, xhr) {
+      let response = JSON.parse(xhr.response)
+      this.notify('negative', response.data.msg)
+    },
+    batchImageUploadedFinish() {
+      this.$refs.batchImageUpload.reset()
+      this.uploadLoading = false
+      this.request({
+        pagination: this.serverPagination,
+      })
     },
     //download excel
     downloadExcel() {

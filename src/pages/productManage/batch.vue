@@ -159,7 +159,7 @@
     <q-dialog v-model="batchFileUploadDialog"
               prevent-close>
       <span slot="title">批量导入</span>
-      <span slot="message">请按照模板填写相关信息</span>
+      <span slot="message">请按照模板填写相关信息(编号或款号务必为文本格式)</span>
       <div slot="body">
         <q-uploader ref="batchFileUpload"
                     :url="api+batchFileUploadUrl"
