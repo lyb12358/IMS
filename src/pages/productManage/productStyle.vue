@@ -1657,6 +1657,9 @@ export default {
           this.$options.data.call(this).productStyle
         )
         this.$nextTick(() => {
+          //FIX 修复新建款式时图片地址复制上一次款式的BUG
+          this.productStyle.image = ''
+          this.productStyle.thumbnail = ''
           this.mainStyleModalOpened = true
         })
       } else if (action === 'update') {

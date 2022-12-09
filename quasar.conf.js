@@ -135,7 +135,7 @@ module.exports = function (ctx) {
       config: {
         notify: {
           position: 'top-right',
-          timeout: 5000
+          timeout: 1500
         },
         cordova: {
           iosStatusBarPadding: true, // add the dynamic top padding on iOS mobile devices

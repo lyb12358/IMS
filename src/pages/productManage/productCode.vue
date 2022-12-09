@@ -1059,7 +1059,7 @@
     <!-- 2022 upload batch image -->
     <q-dialog v-model="batchImageUploadDialog" prevent-close>
       <span slot="title">批量上传图片</span>
-      <span slot="message">图片必须用产品编号命名，最多20张</span>
+      <span slot="message">图片必须用产品编号命名，最多100张</span>
       <div slot="body">
         <q-uploader
           ref="batchImageUpload"
@@ -1069,7 +1069,7 @@
           multiple
           extensions='.jpg,.jpeg,.png'
           hide-upload-button
-          float-label="批量上传图片（上限20）"
+          float-label="批量上传图片（上限100）"
           @uploaded="batchImageUploaded"
           @fail="batchImageUploadedFail"
           @add="addBatchImageFile"
@@ -1970,9 +1970,9 @@ export default {
       this.uploadBtn = true
     },
     addBatchImageFile(files) {
-      if (files.length > 20) {
+      if (files.length > 100) {
         this.$refs.batchImageUpload.reset()
-        this.notify('warning', '一次性上传图片数量不能超过20张')
+        this.notify('warning', '一次性上传图片数量不能超过100张')
         return
       }
       for (let i = 0; i < files.length; i++) {
